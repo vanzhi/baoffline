@@ -1,0 +1,47 @@
+@import './params.scss';
+/* Top */
+.layout-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: $white;
+    border-bottom: 1px solid $Grey-4;
+    height: 49px;
+    & > * {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    & > img {
+        margin: 10px 20px; 
+    }
+    .top-menu-fold {
+        margin-left: 20px;
+        font-size: 18px;
+    }
+    .top-right {
+        position: absolute; 
+        top: 50%;
+        right: 20px;
+        margin-top: -12px;
+        color: $Grey-6;
+        font-size: 12px;
+    }
+}
+.layout-top-title {
+    display: inline-block;
+    margin-left: 20px;
+    font-size: 16px;
+    color: $primaryColor;
+}
+.layout-top-user {
+    width: calc(100% - 370px);
+    font-size: 16px;
+    color: $dark;
+    .user-name {
+        margin-right: 10px;
+    }
+}
+.layout-middle {
+    margin-top: 49px;
+}

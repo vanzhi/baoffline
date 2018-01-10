@@ -14,6 +14,10 @@ const extractTextPluginOptions = shouldUseRelativeAssetPaths
   { publicPath: Array(cssFilename.split('/').length).join('../') }
   : {};
 
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
+
 module.exports = {
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
@@ -34,6 +38,7 @@ module.exports = {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
+      '@': resolve('src'),
     },
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     plugins: [
@@ -97,11 +102,6 @@ module.exports = {
               compact: !_IsDev,
               cacheDirectory: _IsDev,
             },
-          },
-          {
-              test: /\.scss$/,
-              loader: 'style!css!postcss!sass?outputStyle=expanded'
-          
           },
           {
             test: /\.css$/,
@@ -183,12 +183,16 @@ module.exports = {
             // it's runtime that would otherwise processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.js$/, /\.html$/, /\.json$/],
+            exclude: [/\.js$/, /\.html$/, /\.json$/, /\.scss$/],
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
+          {
+            test: /\.scss$/,
+            loaders: ['style-loader', 'css-loader', 'sass-loader']
+          }
         ]
       }
     ]

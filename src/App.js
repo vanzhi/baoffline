@@ -1,21 +1,29 @@
 import React, { Component } from 'react';
 import { Layout } from 'antd';
-
-const { Header, Footer, Sider, Content } = Layout;
+import Top from '@/components/layouts/top';
+import Left from '@/components/layouts/left';
+import Middle from '@/components/layouts/middle';
+import Bottom from '@/components/layouts/bottom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import './styles/reset.scss';
+import './styles/layout.scss';
+import './styles/common.scss';
+import './styles/fn.scss';
+import './styles/custom.scss';
 
 class App extends Component {
     render() {
         return (
-            <div>
+            <Router>
                 <Layout>
-                    <Header>Header</Header>
-                    <Layout>
-                        <Sider>Sider</Sider>
-                        <Content>Content</Content>
+                    <Top></Top>
+                    <Layout className="layout-middle fn-bg-white">
+                        <Left></Left>
+                        <Middle></Middle>
                     </Layout>
-                    <Footer>Footer</Footer>
+                    <Bottom></Bottom>
                 </Layout>
-            </div>
+            </Router>
         );
     }
 }
