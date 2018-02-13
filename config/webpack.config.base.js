@@ -100,7 +100,7 @@ module.exports = {
               // It enables caching results in ./node_modules/.cache/babel-loader/
               // directory for faster rebuilds.
               compact: !_IsDev,
-              cacheDirectory: _IsDev,
+              cacheDirectory: _IsDev
             },
           },
           {
