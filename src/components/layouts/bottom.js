@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 class Bottom extends Component {
     render () {
         return (
-            <Layout.Footer>bottom</Layout.Footer>
+            <Layout.Footer className="layout-footer">bottom</Layout.Footer>
         );
     }
 }

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Layout } from 'antd';
 import Modules from '@/components/contents/index';
 import ChooseStation from '@/components/contents/chooseStation';
 
 function mapStateToProps(state, ownProps) {
     return {
         menus : state.menus,
-        currentStation : state.currentStation,
+        currentStationId : state.currentStationId,
         path: state.path
     }
 }
@@ -51,15 +52,14 @@ class Middle extends Component {
                 )
             }
         }
-        console.log(components)
         return components;
     }
     setRoutes() {
         let components = this.state.baseRoute;
-        let { currentStation, path } = this.props;
+        let { currentStationId, path } = this.props;
         let isInStation = path[0] === 'station';
         // 在station栏目下且无stationid
-        if (isInStation && !currentStation) {
+        if (isInStation && !currentStationId) {
             return (<Route path="/" component={ChooseStation}></Route>)
         }
         // 其他情况-默认
@@ -67,11 +67,13 @@ class Middle extends Component {
     }
     render () {
         return (
-            <Switch>
-                {this.setRoutes()}
-                <Route exact path="/test" component={Modules.test} key="test"></Route>
-                <Route exact path="/" component={Modules.home} key="home"></Route>
-            </Switch>
+            <Layout.Content>
+                <Switch>
+                    {this.setRoutes()}
+                    <Route exact path="/test" component={Modules.test} key="test"></Route>
+                    <Route exact path="/" component={Modules.home} key="home"></Route>
+                </Switch>
+            </Layout.Content>
         );
     }
     component

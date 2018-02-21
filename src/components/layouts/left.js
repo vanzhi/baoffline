@@ -34,7 +34,7 @@ class Left extends Component {
                     // 设置路由模块
                     let basePath = `/${menu.key}`;
                     let component = () => (
-                        <Layout.Sider className="fn-bg-white">
+                        <Layout.Sider className="fn-bg-white layout-left">
                             <Menu mode="inline" selectedKeys={this.props.path} defaultOpenKeys={this.props.path}>
                                 {subsDoms}
                             </Menu>

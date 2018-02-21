@@ -1,4 +1,11 @@
 @import './params.scss';
+#root {
+    height: 100%;
+    min-width: 1080px;
+    .layout-container {
+        height: 100%;
+    }
+}
 /* Top */
 .layout-top {
     position: fixed;
@@ -8,6 +15,7 @@
     background: $white;
     border-bottom: 1px solid $Grey-4;
     height: 49px;
+    min-width: 1080px;
     & > * {
         display: inline-block;
         vertical-align: middle;
@@ -27,6 +35,12 @@
         color: $Grey-6;
         font-size: 12px;
     }
+    .top-breadcrumb {
+        position: absolute; 
+        margin-top: -10px;
+        top: 50%;
+        right: 120px;
+    }
 }
 .layout-top-title {
     display: inline-block;
@@ -42,6 +56,12 @@
         margin-right: 10px;
     }
 }
+/* middle */
 .layout-middle {
     margin-top: 49px;
+}
+/* bottom */
+.layout-footer {
+    height: 70px;
+    box-sizing: border-box;
 }

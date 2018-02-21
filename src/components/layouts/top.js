@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Layout, Icon, Menu } from 'antd';
+import { Icon, Menu, Breadcrumb } from 'antd';
 import { NavLink, Link } from 'react-router-dom';
 import * as Actions from '@/store/actions';
 import Logo from '@/assets/logo.png';
@@ -16,7 +16,8 @@ function mapStateToProps(state) {
     return {
         path : state.path,
         menus : Base.MenuInfo.menus,
-        currentStation: state.stations[state.currentStation] || {},
+        menusByKey : state.menus,
+        currentStation: state.stations[state.currentStationId] || {},
         stationList
     }
 }
@@ -49,7 +50,6 @@ class Top extends Component {
             )
         })
     }
-
     setTopMenu() {
         let { menus, currentStation } = this.props;
         return menus.map(menu => {
@@ -73,30 +73,44 @@ class Top extends Component {
             }
         })
     }
+    // 设置面包屑
+    setBreadcrumb() {
+        return (
+            <span className="top-breadcrumb">
+                <Breadcrumb>
+                    {
+                        this.props.path.map((key, index, path) => {
+                            let name = this.props.menusByKey[key].name
+                            return <Breadcrumb.Item key={ key }>{ name }</Breadcrumb.Item>
+                        })
+                    }
+                </Breadcrumb>
+            </span>
+        )
+    }
     render () {
         return (
-            <Layout>
-                <div className="layout-top">
-                    <img src={Logo} width="120" alt="" />
-                    <div className="fn-m-l-40">
-                        <Menu
-                            selectedKeys={this.props.path}
-                            mode        ="horizontal"
-                            className   ="no-border">
-                            {this.setTopMenu()}
-                        </Menu>
-                    </div>
-                    <span className="top-right">
-                        <Link to="/" className="cm-circle">
-                            <Icon type="home" />
-                        </Link>
-                        <a className="cm-circle fn-m-r-10">
-                            <Icon type="logout" />
-                        </a>
-                        {/* 西瓜头 */}
-                    </span>
+            <div className="layout-top">
+                <img src={Logo} width="120" alt="" />
+                <div className="fn-m-l-40">
+                    <Menu
+                        selectedKeys={this.props.path}
+                        mode        ="horizontal"
+                        className   ="no-border">
+                        {this.setTopMenu()}
+                    </Menu>
                 </div>
-            </Layout>
+                { this.props.path.length && this.props.path[0] && this.setBreadcrumb() }
+                <span className="top-right">
+                    <Link to="/" className="cm-circle">
+                        <Icon type="home" />
+                    </Link>
+                    <a className="cm-circle fn-m-r-10">
+                        <Icon type="logout" />
+                    </a>
+                    {/* 西瓜头 */}
+                </span>
+            </div>
         );
     }
 }

@@ -19,3 +19,65 @@
         color: $white;
     }
 }
+.cm-content {
+    padding: 20px;
+}
+.cm-option {
+    margin-top: 20px;
+}
+.cm-no-data {
+    margin: 20px 0;
+    background: $Grey-2;
+    height: 500px;
+    width: 100%;
+    color: $Grey-6;
+    text-align: center;
+    line-height: 500px;
+    border: 1px dashed $Grey-4;
+}
+.cm-dropbox {
+    height: 180px;
+    line-height: 1.5;
+}
+/* page-home */
+.home-content {
+    margin: 0 auto;
+    width: 1080px;
+}
+.home-title {
+    margin: 20px 0 40px;
+    font-size: 28px;
+}
+.home-info {
+    line-height: 30px;
+    margin-bottom: 30px;
+}
+/* page-choose */
+.choose-box {
+    margin: 80px auto;
+    width: 500px;
+    text-align: center;
+    ul {
+        line-height: 30px;
+    }
+}
+/* page-station */
+.station-tree-layout {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    &:hover {
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+}
+.station-tree {
+    padding: 20px 10px 20px 20px;
+    &.edit {
+        padding: 20px 10px;
+    }
+}
+.station-tree-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: $Blue-9;
+}

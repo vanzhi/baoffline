@@ -1,3 +1,38 @@
+@import './params.scss';
+
+.ant-btn + .ant-btn {
+    margin: 0 0 10px 10px;
+}
+.ant-layout-content {
+    position: relative;
+    & > .ant-layout {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+.station-tree .ant-tree li .ant-tree-node-content-wrapper {
+    color: $Blue-8;
+}
+.station-tree.edit .ant-tree li .ant-tree-node-content-wrapper {
+    color: $Grey-7;
+}
 .no-border.ant-menu-horizontal {
     border: none;
+}
+/* left */
+.layout-left {
+    position: relative;
+    & > .ant-layout-sider-children {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        & > .ant-menu {
+            height: 100%;
+        }
+    }
 }

@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import * as Actions from '@/store/actions';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Card } from 'antd'
+import * as Actions from '@/store/actions'
 
 function mapStateToProps(state, ownProps) {
     return {
@@ -22,7 +23,7 @@ class ChooseStation extends Component {
 	
 	  this.state = {
 	  	list : this.getList(this.props)
-	  };
+	  }
 	}
 	setCurrentStation(id) {
 		this.props.setCurrentStation(id)
@@ -38,9 +39,10 @@ class ChooseStation extends Component {
 	}
 	render() {
 		return (
-			<div>
-				<h3>请选择一个站点</h3>
-				<ul>{this.state.list}</ul>
+			<div className="choose-content">
+				<Card title="请选择一个站点" className="choose-box">
+					<ul>{this.state.list}</ul>
+				</Card>
 			</div>
 		)
 	}

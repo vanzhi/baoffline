@@ -70,6 +70,14 @@ class MenuInfo {
     }
 }
 
+
+const ContentType = {
+    1: '内容',
+    2: '链接',
+    3: '列表'
+}
+
 export default {
-    MenuInfo : new MenuInfo()
+    MenuInfo : new MenuInfo(),
+    ContentType
 };

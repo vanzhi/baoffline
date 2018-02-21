@@ -10,10 +10,12 @@ class Home extends Component {
 
 	render() {
 		return (
-			<div>
-				<h1>系统信息</h1>
-				<div>待审核内容：10篇</div>
-				<div>上次登录时间：2017-1-12 00:02:02</div>
+			<div className="home-content cm-content">
+				<h1 className="home-title">系统信息</h1>
+				<div className="home-info">
+					<p>待审核内容：10篇</p>
+					<p>上次登录时间：2017-1-12 00:02:02</p>
+				</div>
 				<Row gutter={10}>
 					<Col span={6}>
 						<Card title="浏览量（PV）" bordered={true}>

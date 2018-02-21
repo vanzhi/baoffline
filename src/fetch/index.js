@@ -1,4 +1,5 @@
-import fetch from 'isomorphic-fetch';
+// import fetch from 'isomorphic-fetch';
+import axios from 'axios'
 
 const POST = 'POST';
 const GET = 'GET';
@@ -20,33 +21,81 @@ function checkUrl(url) {
 
 export const fetchRequest = (url, params, method = POST) => {
     // 请求配置
-    let headers = new Headers()
-    let config = {
-
-        headers,
-        method
-    };
+    // let headers = new Headers()
+    // headers.append('Content-Type', 'application/json;charset=utf-8')
+    // let config = {
+    //     headers,
+    //     mode: 'cors',
+    //     body: method === POST ? JSON.stringify(params) : undefined,
+    //     method
+    // }
     let requestUrl = checkUrl(url)
 
     return new Promise((resolve, reject) => {
         // 执行http请求
         // todo - 带cookie
-        fetch(requestUrl, config)
-            .then(response => {
-                return response.json()
-            })
-            .then(data => {
-                if (data.code === 1000) {
-                    resolve(data)
-                } else {
-                    reject()
-                }
-            })
+        if (method === POST) {
+            axios.post(requestUrl, params)
+                .then(success => {
+                    if (success.data.code === 1000)
+                        resolve(success.data)
+                    else 
+                        reject(success)
+                })
+                .catch(error => {
+                    reject(error)
+                })
+        } else {
+            axios.get(requestUrl, {params})
+                .then(success => {
+                    if (success.data.code === 1000)
+                        resolve(success.data)
+                    else 
+                        reject(success)
+                })
+                .catch(error => {
+                    reject(error)
+                })
+        }
+
+        // fetch(requestUrl, config)
+        //     .then(response => {
+        //         return response.json()
+        //     })
+        //     .then(data => {
+        //         if (data.code === 1000) {
+        //             resolve(data)
+        //         } else {
+        //             reject()
+        //         }
+        //     })
     }) 
 }
 
+// 上传图片
+
+
+// 获取站点列表
 export const getStationList = (param = {}) => {
     let url = '/cms/domain/list'
     return fetchRequest(url, param, GET)
 }
 
+// 获取栏目列表
+export const getNodeList = (param = {stationId:0}) => {
+    let url = `/cms/node/${param.stationId}/list`
+    return fetchRequest(url, {}, GET)
+}
+
+// 分页查询内容
+export const getContentList = (param = {stationId:0, nodeId:0}) => {
+    let { stationId, nodeId, pageNo, pageSize } = param
+    let url = `/cms/content/${stationId}/${nodeId}/list`
+    return fetchRequest(url, {pageNo, pageSize}, POST)
+}
+
+// 删除栏目
+export const deleteNodes = (param = {}) => {
+    let url = '/cms/node/delete'
+    return fetchRequest(url, param, POST)
+}
