@@ -9,7 +9,11 @@ import {
 	SET_NODES,
 	SET_INDEX_NODE,
 	SET_REQUEST,
-	SET_RESPONSE } from './actions'
+	SET_RESPONSE,
+	SET_NODE_GROUPS,
+	SET_NODE_GROUPS_SORT,
+	SET_CONTENT_GROUPS,
+	SET_CONTENT_GROUPS_SORT } from './actions'
 
 // 一级一级获取menu进行设置，返回menusByKey为state.menus
 function setMenus(menus, menusByKey = {}, prePath = []) {
@@ -129,6 +133,60 @@ export const nodes = (state, action) => {
 			return nodes
 		default:
 			return state || {}
+	}
+}
+
+// 栏目组信息
+export const nodeGroups = (state, action) => {
+	switch(action.type) {
+		case SET_NODE_GROUPS:
+			let groupNodes = {}
+			action.nodeGroups.map((item, index) => {
+				groupNodes[item.nodeGroupName] = item
+				return item
+			})
+			return groupNodes
+		default:
+			return state || {}
+	}
+}
+
+// 栏目组排序
+export const nodeGroupsSort = (state, action) => {
+	switch(action.type) {
+		case SET_NODE_GROUPS_SORT:
+			return action.nodeGroups.map((item, index) => {
+				return item.nodeGroupName
+			})
+		default:
+			return state || []
+	}
+}
+
+// 内容组信息
+export const contentGroups = (state, action) => {
+	switch(action.type) {
+		case SET_CONTENT_GROUPS:
+			let groupContents = {}
+			action.contentGroups.map((item, index) => {
+				groupContents[item.contentGroupName] = item
+				return item
+			})
+			return groupContents
+		default:
+			return state || {}
+	}
+}
+
+// 内容组排序
+export const contentGroupsSort = (state, action) => {
+	switch(action.type) {
+		case SET_CONTENT_GROUPS_SORT:
+			return action.contentGroups.map((item, index) => {
+				return item.contentGroupName
+			})
+		default:
+			return state || []
 	}
 }
 

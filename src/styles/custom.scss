@@ -1,5 +1,8 @@
 @import './params.scss';
-
+.ant-form-item-required:before {
+    content: '•';
+    color: $Red-5;
+}
 .ant-btn + .ant-btn {
     margin: 0 0 10px 10px;
 }

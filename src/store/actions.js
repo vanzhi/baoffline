@@ -56,6 +56,8 @@ export const SET_CURRENT_STATION = 'SET_CURRENT_STATION';
 export const setCurrentStation = (currentStationId) => {
 	return dispatch => {
 		dispatch(getNodes(currentStationId))
+		dispatch(getNodeGroups(currentStationId))
+		dispatch(getContentGroups(currentStationId))
 		dispatch({
 			type : SET_CURRENT_STATION,
 			currentStationId
@@ -82,10 +84,62 @@ export const setIndexNode = (nodeId) => {
 // 异步获取栏目信息
 export const getNodes = (stationId) => {
 	return dispatch => {
-		API.getNodeList({stationId})
+		API.getNodeList({ stationId })
 			.then(success => {
 				dispatch(setNodes(success.data))
 				dispatch(setIndexNode(success.data[0].nodeId))
+			})
+	}
+}
+
+export const SET_NODE_GROUPS = 'SET_NODE_GROUPS'
+export const SET_NODE_GROUPS_SORT = 'SET_NODE_GROUPS_SORT'
+// 设置栏目组信息
+export const setNodeGroups = (nodeGroups) => {
+	return {
+		type: SET_NODE_GROUPS,
+		nodeGroups
+	}
+}
+export const setNodeGroupsSort = (nodeGroups) => {
+	return {
+		type: SET_NODE_GROUPS_SORT,
+		nodeGroups
+	}
+}
+// 异步获取栏目组信息
+export const getNodeGroups = (stationId) => {
+	return dispatch => {
+		API.getNodeGroups({ stationId })
+			.then(success => {
+				dispatch(setNodeGroups(success.data))
+				dispatch(setNodeGroupsSort(success.data))
+			})
+	}
+}
+
+export const SET_CONTENT_GROUPS = 'SET_CONTENT_GROUPS'
+export const SET_CONTENT_GROUPS_SORT = 'SET_CONTENT_GROUPS_SORT'
+// 设置栏目组信息
+export const setContentGroups = (contentGroups) => {
+	return {
+		type: SET_CONTENT_GROUPS,
+		contentGroups
+	}
+}
+export const setContentGroupsSort = (contentGroups) => {
+	return {
+		type: SET_CONTENT_GROUPS_SORT,
+		contentGroups
+	}
+}
+// 异步获取栏目组信息
+export const getContentGroups = (stationId) => {
+	return dispatch => {
+		API.getContentGroups({ stationId })
+			.then(success => {
+				dispatch(setContentGroups(success.data))
+				dispatch(setContentGroupsSort(success.data))
 			})
 	}
 }

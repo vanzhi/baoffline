@@ -97,10 +97,11 @@ class Top extends Component {
                         selectedKeys={this.props.path}
                         mode        ="horizontal"
                         className   ="no-border">
-                        {this.setTopMenu()}
+                        { this.setTopMenu() }
                     </Menu>
                 </div>
-                { this.props.path.length && this.props.path[0] && this.setBreadcrumb() }
+                {/* debug */}
+                { this.props.path.length && this.props.path[0] && this.props.path[0] !== 'test' && this.setBreadcrumb() }
                 <span className="top-right">
                     <Link to="/" className="cm-circle">
                         <Icon type="home" />

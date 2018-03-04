@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Input, Button, Tree, message, Modal, Form, Select } from 'antd'
+import { Layout, Input, Button, Tree, message, Modal, Form, Select, Icon, Upload, Radio, Switch, Checkbox } from 'antd'
 import { connect } from 'react-redux'
 import * as Actions from '@/store/actions'
 import * as API from '@/fetch/index'
@@ -32,18 +32,42 @@ class ContentForm extends Component {
 	state = {
 		contentModelId : Utils.firstKeyOf(Base.ContentType)
 	}
+	formItemLayout = {
+		labelCol: {
+			span: 4
+		},
+		wrapperCol: {
+			span: 8
+		}
+	}
+	formItemLayoutOther = {
+		...this.formItemLayout,
+		wrapperCol: {
+			span: 16
+		}
+	}
 	contentTypeChangeHandler = (value, e) => {
 		this.setState({ contentModelId: value })
 		return value
 	}
+	uploadChangeHandler = (info) => {
+		// console.log(info)
+	}
+	uploadImageRequest = (info) => {
+		// console.log(info)
+		// API.uploadImage({ stationId : this.props.stationId, img1 : info.file })
+	}
 	render() {
 		const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
+		const isPNode = this.props.pNode ? true : false
+		let node = this.props.pNode || this.props.cNode || {}
+
 		return (
 			<Form>
-				<Form.Item { ...this.props.formItemLayout } label="父节点">
-					<span>{ this.props.pNode.nodeName }</span>
+				<Form.Item { ...this.formItemLayout } label={ isPNode ? '父栏目' : '当前栏目' }>
+					<span>{ node.nodeName }</span>
 				</Form.Item>
-				<Form.Item { ...this.props.formItemLayout } label="栏目名称" >
+				<Form.Item { ...this.formItemLayout } label="栏目名称" >
 					{	
 						// nodeName和原生对象属性冲突
 						getFieldDecorator('nodeName_', {
@@ -53,7 +77,7 @@ class ContentForm extends Component {
 						)
 					}
 				</Form.Item>
-				<Form.Item { ...this.props.formItemLayout } label="栏目索引" help="唯一，小写英文字母">
+				<Form.Item { ...this.formItemLayout } label="栏目索引" help="唯一，小写英文字母">
 					{	
 						getFieldDecorator('nodeIndexName', {
 							rules: [{ required: true, message: '请填写栏目索引名称' }],
@@ -62,7 +86,7 @@ class ContentForm extends Component {
 						)
 					}
 				</Form.Item>
-				<Form.Item { ...this.props.formItemLayout } label="栏目类型">
+				<Form.Item { ...this.formItemLayout } label="栏目类型">
 					{	
 						getFieldDecorator('contentModelId', {
 							initialValue: this.state.contentModelId,
@@ -76,39 +100,77 @@ class ContentForm extends Component {
 						)
 					}
 				</Form.Item>
-				<Form.Item { ...this.props.formItemLayout } label="外部链接">
+				<Form.Item { ...this.formItemLayout } label="外部链接">
 					{	
 						getFieldDecorator('linkUrl')(
 							<Input />
 						)
 					}
 				</Form.Item>
-				<Form.Item { ...this.props.formItemLayout } label="连接类型">
+				<Form.Item { ...this.formItemLayout } label="连接类型">
 					{	
 						getFieldDecorator('linkType')(
 							<Input />
 						)
 					}
 				</Form.Item>
-				{/* todo */}
-				<Form.Item { ...this.props.formItemLayout } label="栏目图片">
+				<Form.Item { ...this.formItemLayout } label="栏目图片">
 					<div className="cm-dropbox">
 						{
 							getFieldDecorator('dragger', {
 								valuePropName: 'fileList',
-								getValueFromEvent: this.normFile,
 							})(
-								<Upload.Dragger name="files" action="/upload.do">
+								<Upload.Dragger 
+									name="img1"
+									action={ API._uploadImage({ stationId : this.props.stationId }) } 
+									onChange={ this.uploadChangeHandler }>
 									<p className="ant-upload-drag-icon">
 										<Icon type="inbox" />
 									</p>
-									<p className="ant-upload-text">Click or drag file to this area to upload</p>
-									<p className="ant-upload-hint">Support for a single or bulk upload.</p>
+									<p className="ant-upload-text">点击此处或拖拽文件上传</p>
 								</Upload.Dragger>
 							)
 						}
 					</div>
 				</Form.Item>
+				<Form.Item { ...this.formItemLayoutOther } label="栏目内容">
+					todo
+				</Form.Item>
+				<Form.Item { ...this.formItemLayoutOther } label="栏目摘要">
+					{
+						getFieldDecorator('description')(
+							<Input.TextArea />
+						)
+					}
+				</Form.Item>
+				<Form.Item { ...this.formItemLayoutOther } label="栏目组">
+					{
+						getFieldDecorator('todo0')(
+							<Checkbox.Group />
+						)
+					}
+				</Form.Item>
+				<Form.Item { ...this.formItemLayoutOther } label="专题">
+					{
+						getFieldDecorator('todo1')(
+							<Switch defaultChecked={false} />
+						)
+					}
+				</Form.Item>
+				<Form.Item { ...this.formItemLayoutOther } label="是否隐藏">
+					{
+						getFieldDecorator('todo2')(
+							<Switch defaultChecked={false} />
+						)
+					}
+				</Form.Item>
+					{ 
+						!isPNode 
+						&& (<div className="fn-text-center">
+								<Button type="primary">提交</Button>
+							</div>)
+						|| ''
+					}
 			</Form>
 		)
 	}
@@ -132,7 +194,9 @@ class Menu extends Component {
 		this.setState({ checkedKeys: checkedObj.checked })
 	}
 	selectHandler = (selectedKeys, e) => {
-		this.setState({ selectedKey: selectedKeys[0] })
+		let nodeId = selectedKeys[0] * 1
+		this.setState({ selectedKey: nodeId })
+		
 	}
 	dropHandler = (info) => {
 		const fromKey = info.dragNode.props.eventKey * 1
@@ -212,8 +276,30 @@ class Menu extends Component {
 					{ node.children && node.children.map(nodeId => this.getTreeNodes(nodeId)) }
 				</TreeNode>
 	}
+	// 选择节点的界面
+	setToSelect() {
+		return (
+			<div className="cm-no-data">请选择一个节点</div>
+		)
+	}
+	// 编辑界面
 	setEdit() {
-		// todo
+		let nodeId = this.state.selectedKey
+		let EditFrom = Form.create({
+			mapPropsToFields(props) {
+				let node = props.cNode
+				return {
+					nodeName_ : Form.createFormField({
+						value: node.nodeName,
+					}),
+					// todo
+				}
+			}
+		})(ContentForm)
+
+		return <EditFrom 
+				cNode={ this.props.nodes[this.state.selectedKey] } 
+				stationId={ this.props.currentStationId } />
 	}
 	setDeleteModal() {
 		return (
@@ -228,16 +314,9 @@ class Menu extends Component {
 			</Modal>
 		)
 	}
+	// 设置添加弹窗
 	setAddModal() {
 		let AddFrom = Form.create()(ContentForm)
-		let formItemLayout = {
-			labelCol: {
-				span: 4
-			},
-			wrapperCol: {
-				span: 8
-			}
-		}
 		return (
 			<Modal
 				title="添加栏目"
@@ -251,7 +330,7 @@ class Menu extends Component {
 					this.state.selectedKey > 0 
 					&& <AddFrom 
 						pNode={ this.props.nodes[this.state.selectedKey]}
-						formItemLayout={ formItemLayout } />
+						stationId={ this.props.currentStationId } />
 				}
 			</Modal>
 		)
@@ -282,7 +361,7 @@ class Menu extends Component {
 					</div>
 				</Layout.Sider>
 				<Layout.Content className="fn-bg-white cm-content">
-					{ this.setEdit() }
+					{ this.state.selectedKey > 0  ? this.setEdit() : this.setToSelect() }
 				</Layout.Content>
 				{ this.setDeleteModal() }
 				{ this.setAddModal() }

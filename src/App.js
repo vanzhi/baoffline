@@ -62,7 +62,7 @@ class Root extends Component {
                     <Left></Left>
                     <Middle></Middle>
                 </Layout>
-                <Bottom></Bottom>
+                {/* <Bottom></Bottom> */}
             </Layout>
         )
     }

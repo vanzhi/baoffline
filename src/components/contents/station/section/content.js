@@ -24,22 +24,25 @@ const TreeNode = Tree.TreeNode
 
 class Content extends Component {
 	state = {
-		contentList: []
+		contentList: [],
+		selectedKey: 0
 	}
 	pageNo = 0
 	pageSize = 10
 	selectTreeNodeHandler = (selectedKeys, e) => {
-		this.loadList(selectedKeys[0] * 1, this.props.currentStationId, this.pageNo, this.pageSize)
+		let nodeId = selectedKeys[0] * 1
+		nodeId > 0 && this.loadList(nodeId, this.props.currentStationId, this.pageNo, this.pageSize)
 	}
 	loadList(nodeId, stationId, pageNo, pageSize) {
 		API.getContentList({ nodeId, stationId, pageNo, pageSize })
 			.then(success => {
-				this.setState({
-					contentList : success.data.data
+				this.setState({ 
+					contentList : success.data.data,
+					selectedKey : nodeId || 0
 				})
 			})
 			.catch(error => {
-
+				
 			})
 	}
 	componentDidMount() {
@@ -70,7 +73,7 @@ class Content extends Component {
 	setOption() {
 		return (
 			<div className="cm-option">
-				<Button type="primary" icon="plus">添加内容</Button>
+				<Button type="primary" icon="plus" disabled={ !this.state.selectedKey }>添加内容</Button>
 				<Button type="danger">删除</Button>
 			</div>
 		)
