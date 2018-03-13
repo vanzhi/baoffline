@@ -4,7 +4,7 @@ const Dragger = Upload.Dragger
 const props = {
     name: 'file',
     showUploadList: false,
-    action: '//47.92.77.182:8080/cms/img/1/upload',
+    action: '//139.224.234.251:8080/cms/img/1/upload',
     headers: {
         'X-Requested-With' : null
     },

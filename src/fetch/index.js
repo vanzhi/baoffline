@@ -161,3 +161,11 @@ export const deleteContentGroup =  (param = { stationId:0 }) => {
     delete param.stationId
     return fetchRequest(url, param, POST)
 }
+
+// 评论查询
+export const getCommentList =  (param = { contentId:0 }) => {
+    let url = `/cms/comment/${param.contentId}/list`
+    param = { ...param }
+    delete param.contentId
+    return fetchRequest(url, param, POST)
+}

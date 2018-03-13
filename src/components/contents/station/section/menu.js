@@ -176,8 +176,8 @@ class ContentForm extends Component {
 	}
 }
 
-// 主页面
-class Menu extends Component {
+// 侧边组织树
+class LeftTree extends Component {
 	state = {
 		checkedKeys: [],
 		selectedKey: 0,
@@ -196,7 +196,7 @@ class Menu extends Component {
 	selectHandler = (selectedKeys, e) => {
 		let nodeId = selectedKeys[0] * 1
 		this.setState({ selectedKey: nodeId })
-		
+		this.props.onChange(nodeId)
 	}
 	dropHandler = (info) => {
 		const fromKey = info.dragNode.props.eventKey * 1
@@ -276,6 +276,42 @@ class Menu extends Component {
 					{ node.children && node.children.map(nodeId => this.getTreeNodes(nodeId)) }
 				</TreeNode>
 	}
+	render() {
+		let indexNode = this.props.indexNode
+		let dfId = indexNode.nodeId ? indexNode.nodeId.toString() : ''
+		return (
+			<Layout.Sider className="fn-bg-grey station-tree-layout">
+				<div className="station-tree edit fn-bg-grey">
+					<Button type="primary" icon="plus" ghost disabled={ !this.state.selectedKey } onClick={ this.addHandler }/>
+					<Button type="danger" icon="minus" ghost disabled={ !this.state.checkedKeys.length } onClick={ this.cutHandler }/>
+					{
+						dfId && (
+							<Tree 
+								checkable
+								draggable
+								checkStrictly={ true }
+								defaultExpandedKeys={ [dfId] }
+								onCheck={ this.checkHandler }
+								onSelect={ this.selectHandler }
+								onDrop={ this.dropHandler } >
+								{ this.getTreeNodes(indexNode.nodeId) }
+							</Tree>
+						)
+					}
+				</div>
+			</Layout.Sider>
+		)
+	}
+}
+
+// 主页面
+class Menu extends Component {
+	state = {
+		
+	}
+	nodeChangeHandler = (selectedKey) => {
+		this.setState({ selectedKey })
+	}
 	// 选择节点的界面
 	setToSelect() {
 		return (
@@ -336,30 +372,14 @@ class Menu extends Component {
 		)
 	}
 	render() {
-		let indexNode = this.props.indexNode
-		let dfId = indexNode.nodeId ? indexNode.nodeId.toString() : ''
 		return (
 			<Layout>
-				<Layout.Sider className="fn-bg-grey station-tree-layout">
-					<div className="station-tree edit fn-bg-grey">
-						<Button type="primary" icon="plus" ghost disabled={ !this.state.selectedKey } onClick={ this.addHandler }/>
-						<Button type="danger" icon="minus" ghost disabled={ !this.state.checkedKeys.length } onClick={ this.cutHandler }/>
-						{
-							dfId && (
-								<Tree 
-									checkable
-									draggable
-									checkStrictly={ true }
-									defaultExpandedKeys={ [dfId] }
-									onCheck={ this.checkHandler }
-									onSelect={ this.selectHandler }
-									onDrop={ this.dropHandler } >
-									{ this.getTreeNodes(indexNode.nodeId) }
-								</Tree>
-							)
-						}
-					</div>
-				</Layout.Sider>
+				<LeftTree 
+					indexNode={ this.props.indexNode } 
+					nodes={ this.props.nodes }
+					currentStationId={ this.props.currentStationId }
+					onChange={ this.nodeChangeHandler }>
+				</LeftTree>
 				<Layout.Content className="fn-bg-white cm-content">
 					{ this.state.selectedKey > 0  ? this.setEdit() : this.setToSelect() }
 				</Layout.Content>
