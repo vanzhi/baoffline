@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Layout, Input, Button, Table, Tree, Modal, Form, message, Popconfirm} from 'antd'
+import { Input, Button, Table, Modal, Form, message, Popconfirm} from 'antd'
 import * as Actions from '@/store/actions'
 import * as API from '@/fetch/index'
 
@@ -36,7 +36,7 @@ class ContentGroupForm extends Component {
 		}
 	}
 	render() {
-		const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
+		const { getFieldDecorator } = this.props.form
 		return (
 			<Form>
 				<Form.Item { ...this.formItemLayout } label="内容组名称">
@@ -60,29 +60,37 @@ class ContentGroup extends Component {
 	state = {
 		compileVisible: false,
 		compileType: Add,
-		currentGroupName: null
+		currentGroupId: 0
 	}
 	compileForm = {}
 	addContentGroup = (e) => {
 		this.setState({ compileVisible : true, compileType : Add })
 	}
-	editContentGroup = (currentGroupName) => {
-		this.setState({ compileVisible : true, compileType : Edit, currentGroupName })
+	editContentGroup = (currentGroupId, b, c) => {
+		this.setState({ compileVisible : true, compileType : Edit, currentGroupId })
 	}
-	detailContentGroup = (currentGroupName) => {
+	detailContentGroup = (currentGroupId) => {
 		
 	}
 	compileOk = () => {
 		let isAdd = this.state.compileType === Add
 		this.compileForm.validateFieldsAndScroll((err, values) => {
 			if (!err) {
-				let param = {
-					stationId : this.props.currentStationId,
-					...values
-				}
 				if (isAdd) {
+					let param = {
+						data: {
+							domainId : this.props.currentStationId,
+							...values
+						}
+					}
 					this.addOk(param)
 				} else {
+					let param = {
+						data: {
+							id: this.state.currentGroupId,
+							...values
+						}
+					}
 					this.editOk(param)
 				}
 			}
@@ -96,7 +104,7 @@ class ContentGroup extends Component {
 				this.props.refreshContentGroups(this.props.currentStationId)
 			}) 
 			.catch(error => {
-				message.error(error.data.desc)
+				
 			})
 	}
 	editOk = (param) => {
@@ -107,21 +115,23 @@ class ContentGroup extends Component {
 				this.props.refreshContentGroups(this.props.currentStationId)
 			}) 
 			.catch(error => {
-				message.error(error.data.desc)
+				
 			})
 	}
-	deleteOk = (contentGroupName) => {
+	deleteOk = (id) => {
+		let contentGroup = this.props.contentGroups[id]
 		let param = {
-			stationId : this.props.currentStationId,
-			names: [contentGroupName]
+			data: {
+				ids: [id]
+			}
 		}
 		API.deleteContentGroup(param)
 			.then(success => {
-				message.success(`删除${contentGroupName}成功！`)
+				message.success(`删除${contentGroup.contentGroupName}成功！`)
 				this.props.refreshContentGroups(this.props.currentStationId)
 			})
 			.catch(error => {
-				message.error(error.data.desc)
+				
 			})
 	}
 	compileCancel = () => {
@@ -148,12 +158,12 @@ class ContentGroup extends Component {
 		}, {
 			title: '操作',
 			render: (text, record) => {
-				let deleteHandler = () => this.deleteOk(record.contentGroupName)
+				let deleteHandler = () => this.deleteOk(record.id)
 				let editHandler = () => {
-					this.editContentGroup(record.contentGroupName)
+					this.editContentGroup(record.id)
 				}
 				let detailHandler = () => {
-					this.detailContentGroup(record.contentGroupName)
+					this.detailContentGroup(record.id)
 				}
 				return (
 					<div>
@@ -186,7 +196,7 @@ class ContentGroup extends Component {
 	// 设置编辑/添加的操作弹窗
 	setCompileModal() {
 		let isAdd = this.state.compileType === Add
-		let currentGroup = this.props.contentGroups[this.state.currentGroupName]
+		let currentGroup = this.props.contentGroups[this.state.currentGroupId]
 		let options = isAdd ? {} : {
 			mapPropsToFields(props) {
 				return {

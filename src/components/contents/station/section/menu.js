@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Input, Button, Tree, message, Modal, Form, Select, Icon, Upload, Radio, Switch, Checkbox } from 'antd'
+import { Layout, Input, Button, Tree, message, Modal, Form, Select, Icon, Upload, Switch, Checkbox } from 'antd'
 import { connect } from 'react-redux'
 import * as Actions from '@/store/actions'
 import * as API from '@/fetch/index'
@@ -28,7 +28,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 // 添加/编辑表单
-class ContentForm extends Component {
+class MenuForm extends Component {
 	state = {
 		contentModelId : Utils.firstKeyOf(Base.ContentType)
 	}
@@ -58,7 +58,7 @@ class ContentForm extends Component {
 		// API.uploadImage({ stationId : this.props.stationId, img1 : info.file })
 	}
 	render() {
-		const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
+		const { getFieldDecorator } = this.props.form
 		const isPNode = this.props.pNode ? true : false
 		let node = this.props.pNode || this.props.cNode || {}
 
@@ -166,9 +166,11 @@ class ContentForm extends Component {
 				</Form.Item>
 					{ 
 						!isPNode 
-						&& (<div className="fn-text-center">
+						&& (
+							<div className="fn-text-center">
 								<Button type="primary">提交</Button>
-							</div>)
+							</div>
+						) 
 						|| ''
 					}
 			</Form>
@@ -320,7 +322,7 @@ class Menu extends Component {
 	}
 	// 编辑界面
 	setEdit() {
-		let nodeId = this.state.selectedKey
+		// let nodeId = this.state.selectedKey
 		let EditFrom = Form.create({
 			mapPropsToFields(props) {
 				let node = props.cNode
@@ -331,7 +333,7 @@ class Menu extends Component {
 					// todo
 				}
 			}
-		})(ContentForm)
+		})(MenuForm)
 
 		return <EditFrom 
 				cNode={ this.props.nodes[this.state.selectedKey] } 
@@ -352,7 +354,7 @@ class Menu extends Component {
 	}
 	// 设置添加弹窗
 	setAddModal() {
-		let AddFrom = Form.create()(ContentForm)
+		let AddFrom = Form.create()(MenuForm)
 		return (
 			<Modal
 				title="添加栏目"

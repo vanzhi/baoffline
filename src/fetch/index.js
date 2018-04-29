@@ -1,5 +1,6 @@
 // import fetch from 'isomorphic-fetch';
 import axios from 'axios'
+import { message } from 'antd'
 
 const POST = 'POST';
 const GET = 'GET';
@@ -17,6 +18,10 @@ function checkUrl(url) {
     let protocol = _protocol || window.location.protocol
 
     return [protocol, '//', host, (port ? (':' + port) : ''), url].join('')
+}
+
+function errorCall(error) {
+    error && error.data && message.error(error.data.desc)
 }
 
 export const fetchRequest = (url, params, method = POST) => {
@@ -40,10 +45,14 @@ export const fetchRequest = (url, params, method = POST) => {
                     if (success.data.code === 1000)
                         resolve(success.data)
                     else 
-                        reject(success)
+                        if (reject(success) !== false) {
+                            errorCall(success)
+                        }
                 })
                 .catch(error => {
-                    reject(error)
+                    if (reject(error) !== false) {
+                        errorCall(error)
+                    }
                 })
         } else {
             axios.get(requestUrl, {params})
@@ -51,10 +60,14 @@ export const fetchRequest = (url, params, method = POST) => {
                     if (success.data.code === 1000)
                         resolve(success.data)
                     else 
-                        reject(success)
+                    if (reject(success) !== false) {
+                        errorCall(success)
+                    }
                 })
                 .catch(error => {
-                    reject(error)
+                    if (reject(error) !== false) {
+                        errorCall(error)
+                    }
                 })
         }
 
@@ -74,7 +87,17 @@ export const fetchRequest = (url, params, method = POST) => {
 
 // 上传图片
 export const _uploadImage = (param) => {
-    return checkUrl(`/cms/img/${param.stationId}/upload`)
+    return checkUrl(`/cms/resource/img/${param.stationId}/upload`)
+}
+
+// 上传视频
+export const _uploadVideo = (param) => {
+    return checkUrl(`/cms/resource/video/${param.stationId}/upload`)
+}
+
+// 上传视频
+export const _uploadFile = (param) => {
+    return checkUrl(`/cms/resource/file/${param.stationId}/upload`)
 }
 
 // 获取站点列表
@@ -139,32 +162,52 @@ export const getContentGroups = (param = { stationId:0 }) => {
 }
 
 // 添加内容组
-export const addContentGroup =  (param = { stationId:0 }) => {
-    let url = `/cms/content/group/${param.stationId}/add`
-    param = { ...param }
-    delete param.stationId
-    return fetchRequest(url, param, POST)
+export const addContentGroup =  (param = {}) => {
+    let url = `/cms/content/group/add`
+    return fetchRequest(url, param.data, POST)
 }
 
 // 编辑内容组-todo-没有接口
-export const editContentGroup = (param = { stationId:0 }) => {
-    let url = `/cms/content/group/${param.stationId}/edit`
-    param = { ...param }
-    delete param.stationId
-    return fetchRequest(url, param, POST)
+export const editContentGroup = (param = {}) => {
+    let url = `/cms/content/group/update`
+    return fetchRequest(url, param.data, POST)
 }
 
 // 删除内容组
-export const deleteContentGroup =  (param = { stationId:0 }) => {
-    let url = `/cms/content/group/${param.stationId}/delete`
-    param = { ...param }
-    delete param.stationId
-    return fetchRequest(url, param, POST)
+export const deleteContentGroup =  (param = {}) => {
+    let url = `/cms/content/group/delete`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 添加内容
+export const addContent =  (param = { stationId:0 }) => {
+    let url = `/cms/content/${param.stationId}/${param.nodeId}/add`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 编辑内容
+export const updateContent =  (param = {}) => {
+    let url = `/cms/content/update`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 删除内容
+export const deleteContent =  (param = {}) => {
+    let url = `/cms/content/delete`
+    return fetchRequest(url, param.data, POST)
 }
 
 // 评论查询
 export const getCommentList =  (param = { contentId:0 }) => {
     let url = `/cms/comment/${param.contentId}/list`
+    param = { ...param }
+    delete param.contentId
+    return fetchRequest(url, param, POST)
+}
+
+// 上传图片
+export const uploadImage = (param = {}) => {
+    let url = `/cms/resource/img/${param.stationId}/upload`
     param = { ...param }
     delete param.contentId
     return fetchRequest(url, param, POST)

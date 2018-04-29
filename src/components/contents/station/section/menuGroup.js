@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { Layout, Input, Button, Table, Tree, Modal, Form, message, Popconfirm} from 'antd'
+import { Input, Button, Table, Modal, Form, message, Popconfirm} from 'antd'
 import * as Actions from '@/store/actions'
 import * as API from '@/fetch/index'
 
@@ -36,7 +36,7 @@ class MenuGroupForm extends Component {
 		}
 	}
 	render() {
-		const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form
+		const { getFieldDecorator } = this.props.form
 		return (
 			<Form>
 				<Form.Item { ...this.formItemLayout } label="栏目组名称">
@@ -96,7 +96,7 @@ class MenuGroup extends Component {
 				this.props.refreshNodeGroups(this.props.currentStationId)
 			}) 
 			.catch(error => {
-				message.error(error.data.desc)
+				
 			})
 	}
 	editOk = (param) => {
@@ -107,7 +107,7 @@ class MenuGroup extends Component {
 				this.props.refreshNodeGroups(this.props.currentStationId)
 			}) 
 			.catch(error => {
-				message.error(error.data.desc)
+				
 			})
 	}
 	deleteOk = (nodeGroupName) => {
@@ -121,7 +121,7 @@ class MenuGroup extends Component {
 				this.props.refreshNodeGroups(this.props.currentStationId)
 			})
 			.catch(error => {
-				message.error(error.data.desc)
+				
 			})
 	}
 	compileCancel = () => {

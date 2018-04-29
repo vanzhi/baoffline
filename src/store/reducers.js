@@ -169,7 +169,7 @@ export const contentGroups = (state, action) => {
 		case SET_CONTENT_GROUPS:
 			let groupContents = {}
 			action.contentGroups.map((item, index) => {
-				groupContents[item.contentGroupName] = item
+				groupContents[item.id] = item
 				return item
 			})
 			return groupContents
@@ -183,7 +183,7 @@ export const contentGroupsSort = (state, action) => {
 	switch(action.type) {
 		case SET_CONTENT_GROUPS_SORT:
 			return action.contentGroups.map((item, index) => {
-				return item.contentGroupName
+				return item.id
 			})
 		default:
 			return state || []

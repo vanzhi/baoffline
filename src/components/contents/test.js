@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { Upload, Icon, message, Input, Textarea } from 'antd'
+import { Upload, Icon, message } from 'antd'
 const Dragger = Upload.Dragger
 const props = {
     name: 'file',
     showUploadList: false,
-    action: '//139.224.234.251:8080/cms/img/1/upload',
+    action: '//139.224.234.251:8080/cms/resource/img/1/upload',
     headers: {
         'X-Requested-With' : null
     },
