@@ -16,6 +16,16 @@
         right: 0;
     }
 }
+.cm-bigger-tree.ant-tree li .ant-tree-node-content-wrapper {
+    line-height: 40px;
+}
+.cm-bigger-tree.ant-tree li span.ant-tree-switcher {
+    height: 40px;
+    line-height: 40px;
+}
+.cm-bigger-tree.ant-tree li .ant-tree-node-content-wrapper {
+    height: 40px;
+}
 .station-tree .ant-tree li .ant-tree-node-content-wrapper {
     color: $Blue-8;
 }

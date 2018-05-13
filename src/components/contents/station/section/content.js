@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
-import { Layout, Input, Button, Table, Tree, Form, Modal, Upload, Icon, message } from 'antd'
+import { Layout, Input, Button, Table, Tree, Form, Modal, Upload, Icon, message, Checkbox, Radio, Tag, Spin, Select } from 'antd'
 import E from 'wangeditor'
 import { connect } from 'react-redux'
 import * as Actions from '@/store/actions'
 import * as API from '@/fetch/index'
+import Base from '@/config/base'
+import Utils from '@/utils/utils'
 
 function mapStateToProps(state, ownProps) {
 	return {
@@ -51,34 +53,168 @@ class Editor extends React.Component {
 	}
 }
 
-// 附件上传 - todo 多文件 编辑
-class FileWall extends React.Component {
-	state = {
-		fileList: []
+// 内容组
+class GroupList extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			fetching: false,
+			data: [],
+			value: []
+		}
+	}
+	handleSearch = (value) => {
+		
+	}
+	handleChange = (value) => {
+
+	}
+	render() {
+		const { fetching, data, value } = this.state
+		return (
+			<Select
+				mode="multiple"
+				labelInValue
+				value={value}
+				placeholder="选择内容组"
+				notFoundContent={fetching ? <Spin size="small" /> : null}
+				filterOption={false}
+				onSearch={this.handleSearch}
+				onChange={this.handleChange}
+				style={{ width: '100%' }}>
+				{
+					data.map(d => <Select.Option key={d.value}>{d.text}</Select.Option>)
+				}
+			</Select>
+		)
+	}
+}
+
+// 关键字
+class KeyWords extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			tags: props.value ? props.value.split(',') : [],
+			inputVisible: false,
+			inputValue: ''
+		}
 	}
 	static defaultProps = {
 		onChange: () => {}
 	}
-	handleSuccess = (data, info) => {
-		let fileList = [{
-			name: 'fileUrl',
-			url: data.data[0].url,
-			uid: info.uid,
-			status: 'done'
-		}]
-		this.props.onChange(fileList)
+	handleAfterClose = (key, index) => {
+		let tags = this.state.tags.filter(tag => tag !== key)
+		this.setState({ tags })
+	}
+	handleInputChange = (e) => {
+		this.setState({ inputValue: e.target.value.trim() })
+	}
+	handleInputConfirm = (e) => {
+		let value = e.target.value.trim()
+		let param = {
+			inputVisible: false,
+			inputValue: ''
+		}
+		if (value && this.state.tags.indexOf(value) < 0) {
+			param.tags = this.state.tags
+			param.tags.push(value)
+			this.props.onChange(param.tags.join(','))
+		}
+		this.setState(param)
+	}
+	showInput = () => {
+		this.setState({
+			inputVisible: true
+		}, () => {
+			this.input.focus()
+		})
+	}
+	saveInputRef = (input) => {
+		this.input = input
+	}
+	render() {
+		let { inputVisible, tags, inputValue } = this.state
+		return (
+			<div>
+				{
+					tags.map((item, index) => {
+						return (
+							<Tag 
+								key={item} 
+								afterClose={() => this.handleAfterClose(item, index)} 
+								closable>
+								{ item }
+							</Tag>
+						)
+					})
+				}
+				{
+					inputVisible 
+					&& <Input
+						ref={this.saveInputRef}
+						type="text"
+						size="small"
+						style={{ width: 78 }}
+						value={inputValue}
+						onChange={this.handleInputChange}
+						onBlur={this.handleInputConfirm}
+						onPressEnter={this.handleInputConfirm}/> 
+					||
+					<Tag
+						onClick={this.showInput}
+						style={{ background: '#fff', borderStyle: 'dashed' }}>
+						<Icon type="plus" />新增关键字
+					</Tag>
+				}
+			</div>
+			
+		)
+	}
+}
+
+// 附件上传
+class FileWall extends React.Component {
+	constructor(props) {
+		super(props)
+		let fileList = props.value ? props.value.split(',').map(function (item, index) {
+			return {
+				name: item || index,
+				url: item,
+				uid: item || index,
+				status: 'done'
+			}
+		}) : []
+		this.state = {
+			fileList
+		}
+	}
+	static defaultProps = {
+		onChange: () => {}
 	}
 	handleRemove = (data) => {
-		this.setState({ fileList: [] })
 		this.props.onChange()
 	}
 	handleChange = (data) => {
 		let fileList = data.fileList
+		let isAllDone = true
+		let urls = []
+		for (let i = 0; i < fileList.length; i ++) {
+			let file = fileList[i]
+			if (file.status === 'done' && file.response && file.response.code === 1000) {
+				urls.push(file.response.data[0].url)
+			} else {
+				isAllDone = false
+				break
+			}
+		}
+		if (isAllDone) {
+			this.props.onChange(urls.join(','))
+		}
 		this.setState({ fileList })
 	}
 	render() {
 		let fileList = this.state.fileList
-		let isFileUploadSuccess = fileList.length && fileList[0].status === 'done' ? true : false
 
 		return (
 			<Upload
@@ -86,35 +222,31 @@ class FileWall extends React.Component {
 				fileList={ fileList }
 				onRemove={ this.handleRemove }
 				onChange={ this.handleChange }
-				onSuccess={ this.handleSuccess }>
-				{ 	
-					!isFileUploadSuccess && (
-						<Button>
-							<Icon type="upload" /> 文件上传
-						</Button>
-					)
-				}
+				multiple>
+				<Button><Icon type="upload" /> 文件上传</Button>
 			</Upload>
 		)
 	}
 }
 
-// 视频上传 - todo 多文件 编辑
+// 视频上传 
 class VideoWall extends React.Component {
-	state = {
-		fileList: []
+	constructor(props) {
+		super(props)
+		let fileList = props.value ? props.value.split(',').map(function (item, index) {
+			return {
+				name: item || index,
+				url: item,
+				uid: item || index,
+				status: 'done'
+			}
+		}) : []
+		this.state = {
+			fileList
+		}
 	}
 	static defaultProps = {
 		onChange: () => {}
-	}
-	handleSuccess = (data, info) => {
-		let fileList = [{
-			name: 'videoUrl',
-			url: data.data[0].url,
-			uid: info.uid,
-			status: 'done'
-		}]
-		this.props.onChange(fileList)
 	}
 	handleRemove = (data) => {
 		this.setState({ fileList: [] })
@@ -122,6 +254,20 @@ class VideoWall extends React.Component {
 	}
 	handleChange = (data) => {
 		let fileList = data.fileList
+		let isAllDone = true
+		let urls = []
+		for (let i = 0; i < fileList.length; i ++) {
+			let file = fileList[i]
+			if (file.status === 'done' && file.response && file.response.code === 1000) {
+				urls.push(file.response.data[0].url)
+			} else {
+				isAllDone = false
+				break
+			}
+		}
+		if (isAllDone) {
+			this.props.onChange(urls.join(','))
+		}
 		this.setState({ fileList })
 	}
 	render() {
@@ -135,25 +281,30 @@ class VideoWall extends React.Component {
 				fileList={ fileList }
 				onRemove={ this.handleRemove }
 				onChange={ this.handleChange }
-				onSuccess={ this.handleSuccess }>
-				{ 	
-					!isFileUploadSuccess && (
-						<Button>
-							<Icon type="upload" /> 视频上传
-						</Button>
-					)
-				}
+				multiple>
+				<Button><Icon type="upload" /> 视频上传</Button>
 			</Upload>
 		)
 	}
 }
 
-// 图片上传 - todo 多文件
+// 图片上传
 class PicturesWall extends React.Component {
-	state = {
-		previewVisible: false,
-		previewImage: '',
-		fileList: this.props.value ? [{ name: 'imageUrl', uid: '1', url: this.props.value }] : []
+	constructor(props) {
+		super(props)
+		let fileList = props.value ? props.value.split(',').map(function (item, index) {
+			return {
+				name: item || index,
+				url: item,
+				uid: item || index,
+				status: 'done'
+			}
+		}) : []
+		this.state = {
+			previewVisible: false,
+			previewImage: '',
+			fileList
+		}
 	}
 
 	static defaultProps = {
@@ -174,24 +325,27 @@ class PicturesWall extends React.Component {
 		this.props.onChange()
 	}
 
-	handleSuccess = (data, info) => {
-		let fileList = [{
-			name: 'imageUrl',
-			url: data.data[0].url,
-			uid: info.uid
-		}]
+	handleChange = (data) => {
+		let fileList = data.fileList
+		let isAllDone = true
+		let urls = []
+		for (let i = 0; i < fileList.length; i ++) {
+			let file = fileList[i]
+			if (file.status === 'done' && file.response && file.response.code === 1000) {
+				urls.push(file.response.data[0].url)
+			} else {
+				isAllDone = false
+				break
+			}
+		}
+		if (isAllDone) {
+			this.props.onChange(urls.join(','))
+		}
 		this.setState({ fileList })
-		this.props.onChange(fileList[0].url)
 	}
 
 	render() {
 		const { previewVisible, previewImage, fileList } = this.state;
-		const uploadButton = (
-			<div>
-				<Icon type="plus" />
-				<div className="ant-upload-text">图片上传</div>
-			</div>
-		)
 		return (
 			<div className="clearfix">
 				<Upload
@@ -202,10 +356,13 @@ class PicturesWall extends React.Component {
 					fileList={ fileList }
 					name={ `img${fileList.length}` }
 					onPreview={ this.handlePreview }
-					onSuccess={ this.handleSuccess }
 					onRemove={ this.handleRemove }
-				>
-					{ fileList.length >= 1 ? null : uploadButton }
+					onChange={ this.handleChange }
+					multiple>
+					<div>
+						<Icon type="plus" />
+						<div className="ant-upload-text">图片上传</div>
+					</div>
 				</Upload>
 				<Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
 					<img alt="example" style={{ width: '100%' }} src={previewImage} />
@@ -235,7 +392,19 @@ class ContentForm extends Component {
 	}
 	render() {
 		const { getFieldDecorator } = this.props.form
-
+		const options = [{
+			label: '推荐',
+			value: 'isRecommend'
+		}, {
+			label: '热点',
+			value: 'isHot'
+		}, {
+			label: '置顶',
+			value: 'isTop'
+		}, {
+			label: '醒目',
+			value: 'isColor'
+		}]
 		return (
 			<Form>
 				<Form.Item {...this.formItemLayout} label="标题">
@@ -319,10 +488,82 @@ class ContentForm extends Component {
 						)
 					}
 				</Form.Item>
+				<Form.Item {...this.formItemLayout} label="内容属性">
+					{
+						getFieldDecorator('contentPropGroup', {
+							
+						})(
+							<Checkbox.Group options={options}></Checkbox.Group>
+						)
+					}
+				</Form.Item>
+				<Form.Item {...this.formItemLayout} label="APP样式">
+					{
+						getFieldDecorator('appType', {
+							rules: [{ required: true, message: '请选择app样式' }],
+						})(
+							<Radio.Group>
+								<Radio value={0}>无图</Radio>
+								<Radio value={1}>小图</Radio>
+								<Radio value={2}>大图</Radio>
+								<Radio value={3}>多图</Radio>
+								<Radio value={4}>视频</Radio>
+							</Radio.Group>
+						)
+					}
+				</Form.Item>
+				<Form.Item {...this.formItemLayout} label="权限">
+					{
+						getFieldDecorator('readType', {
+							rules: [{ required: true, message: '请选择权限' }],
+						})(
+							<Radio.Group>
+								{
+									Utils.each(Base.readType, (item, key) => {
+										return <Radio value={key * 1} key={ key }>{ item }</Radio>
+									})
+								}
+							</Radio.Group>
+						)
+					}
+				</Form.Item>
+				<Form.Item {...this.formItemLayout} label="状态">
+					{
+						getFieldDecorator('checkedLevel', {
+							rules: [{ required: true, message: '请选择状态' }],
+						})(
+							<Radio.Group>
+								<Radio value={0}>保持不变</Radio>
+								<Radio value={1}>草稿</Radio>
+								<Radio value={2}>待审核</Radio>
+								<Radio value={3}>发布</Radio>
+							</Radio.Group>
+						)
+					}
+				</Form.Item>
+				<Form.Item {...this.editItemLayout} label="关键字">
+					{
+						getFieldDecorator('tags', {
+							
+						})(
+							<KeyWords />
+						)
+					}
+				</Form.Item>
+				<Form.Item {...this.formItemLayout} label="内容组">
+					{/* todo缺模糊搜索内容组接口 */}
+					{/* {
+						getFieldDecorator('contentGroupIds', {
+							
+						})(
+							<GroupList />
+						)
+					} */}
+				</Form.Item>
 				<Form.Item {...this.editItemLayout} label="内容">
 					{
 						getFieldDecorator('content', {
-
+							rules: [{ required: true, message: '请输入内容' }],
 						})(
 							<Editor />
 						)
@@ -340,13 +581,18 @@ class Content extends Component {
 		currntContent: {},
 		contentList: [],
 		selectedRowKeys: [],
-		selectedKey: 0
+		selectedKey: 0,
+		totalPage: 1,
+		pageNo: 0,
+		pageSize: 10
 	}
-	pageNo = 0
-	pageSize = 10
 	selectTreeNodeHandler = (selectedKeys, e) => {
-		let nodeId = selectedKeys[0] * 1
-		nodeId > 0 && this.loadList(nodeId, this.props.currentStationId, this.pageNo, this.pageSize)
+		let nodeId = selectedKeys[0] * 1,
+			stationId = this.props.currentStationId,
+			pageSize = this.state.pageSize
+		if (nodeId > 0) {
+			this.loadList(nodeId, stationId, 0, pageSize)
+		}
 	}
 	handleSelectChange = (selectedRowKeys) => {
 		this.setState({ selectedRowKeys })
@@ -368,6 +614,11 @@ class Content extends Component {
 			cancelText: '取消',
 			onOk: this.submitDelete
 		});
+	}
+	handlePageChange = (pageNo) => {
+		let nodeId = this.state.selectedKey,
+			stationId = this.props.currentStationId
+		this.loadList(nodeId, stationId, pageNo - 1)
 	}
 	submitDelete = () => {
 		let param = {
@@ -405,7 +656,9 @@ class Content extends Component {
 				let param = {
 					stationId : this.props.currentStationId,
 					nodeId: this.state.selectedKey,
-					data: values
+					data: {
+						...this.requestParamFilter(values)
+					}
 				}
 				this.submitAdd(param)
 			}
@@ -431,26 +684,53 @@ class Content extends Component {
 				let param = {
 					data: {
 						id: this.state.currntContent.id,
-						...values
+						...this.requestParamFilter(values),
 					}
 				}
 				this.submitEdit(param)
 			}
 		})
 	}
+	requestParamFilter(values) {
+		let contentPropGroup = values.contentPropGroup || []
+		delete values.contentPropGroup
+		return {
+			...values,
+			isRecommend: contentPropGroup.indexOf('isRecommend') > -1 ? 0 : 1,
+			isHot: contentPropGroup.indexOf('isHot') > -1 ? 0 : 1,
+			isTop: contentPropGroup.indexOf('isTop') > -1 ? 0 : 1,
+			isColor: contentPropGroup.indexOf('isColor') > -1 ? 0 : 1,
+		}
+	}
 	reLoadList() {
-		let nodeId = this.state.selectedKey, 
+		let nodeId = this.state.selectedKey,
 			stationId = this.props.currentStationId, 
-			pageNo = 0, 
+			pageNo = 0,
 			pageSize = this.pageSize
+		this.setState({ pageNo })
 		this.loadList(nodeId, stationId, pageNo, pageSize)
 	}
-	loadList(nodeId = this.state.selectedKey, stationId = this.props.currentStationId, pageNo = this.pageNo, pageSize = this.pageSize) {
-		API.getContentList({ nodeId, stationId, pageNo, pageSize })
+	loadList(nodeId = this.state.selectedKey, stationId = this.props.currentStationId, pageNo = this.state.pageNo, pageSize = this.state.pageSize) {
+		let params = {}
+		if (nodeId !== this.state.selectedKey) {
+			params.selectedKey = nodeId
+		}
+		if (pageNo !== this.state.pageNo) {
+			params.pageNo = pageNo
+		}
+		if (pageSize !== this.state.pageSize) {
+			params.pageSize = pageSize
+		}
+		if (Object.keys(params).length > 0) {
+			this.setState({ ...params })
+		}
+		API.getContentList({ nodeId, stationId, data: { pageNo, pageSize } })
 			.then(success => {
+				let { data, totalCount } = success.data
 				this.setState({
-					contentList: success.data.data,
-					selectedKey: nodeId || 0
+					contentList: data,
+					selectedKey: nodeId || 0,
+					totalPage: totalCount
 				})
 			})
 			.catch(error => {
@@ -493,7 +773,12 @@ class Content extends Component {
 		)
 	}
 	setList() {
-		const { selectedRowKeys } = this.state;
+		const { selectedRowKeys, totalPage, pageNo } = this.state;
+		const pagination = {
+			onChange: this.handlePageChange,
+			current: pageNo + 1,
+			total: totalPage
+		}
 		const rowSelection = {
 			selectedRowKeys,
       		onChange: this.handleSelectChange,
@@ -505,7 +790,16 @@ class Content extends Component {
 			title: '添加日期',
 			dataIndex: 'addDate'
 		}, {
-			title: '点击量',
+			title: '状态',
+			render: (data) => {
+				let status = {
+					0: '默认',
+					1: '草稿',
+					2: '待审核',
+					3: '发布'
+				}
+				return status[data.checkedLevel]
+			}
 		}, {
 			title: '操作',
 			render: this.setListOption
@@ -514,7 +808,8 @@ class Content extends Component {
 			rowSelection={rowSelection} 
 			columns={columns} 
 			dataSource={this.state.contentList} 
-			rowKey="id" />
+			rowKey="id" 
+			pagination={pagination}/>
 	}
 	setNoData() {
 		return <div className="cm-no-data">暂无数据</div>
@@ -523,6 +818,11 @@ class Content extends Component {
 		let options = {
 			mapPropsToFields: (props) => {
 				let currntContent = this.state.currntContent
+				let contentPropGroup = []
+				currntContent.isRecommend == 1 && contentPropGroup.push('isRecommend')
+				currntContent.isHot == 1 && contentPropGroup.push('isHot')
+				currntContent.isTop == 1 && contentPropGroup.push('isTop')
+				currntContent.isColor == 1 && contentPropGroup.push('isColor')
 				return {
 					title: Form.createFormField({
 						value: currntContent.title
@@ -542,13 +842,37 @@ class Content extends Component {
 					linkUrl: Form.createFormField({
 						value: currntContent.linkUrl
 					}),
+					summary: Form.createFormField({
+						value: currntContent.summary
+					}),
+					author: Form.createFormField({
+						value: currntContent.author
+					}),
+					source: Form.createFormField({
+						value: currntContent.source
+					}),
+					contentPropGroup: Form.createFormField({
+						value: contentPropGroup
+					}),
+					appType: Form.createFormField({
+						value: currntContent.appType
+					}),
+					readType: Form.createFormField({
+						value: currntContent.readType
+					}),
+					tags: Form.createFormField({
+						value: currntContent.tags
+					}),
+					checkedLevel: Form.createFormField({
+						value: currntContent.checkedLevel
+					}),
 					content: Form.createFormField({
 						value: currntContent.content
 					})
 				}
 			}
 		}
-		let EditFrom = Form.create(options)(ContentForm)
+		let EditForm = Form.create(options)(ContentForm)
 		return (
 			<Modal
 				title="编辑内容"
@@ -558,12 +882,12 @@ class Content extends Component {
 				visible={ this.state.editVisible }
 				onOk={ this.editOk }
 				onCancel={ this.editCancel }>
-				<EditFrom ref="editForm" data={this.state.currntContent} stationId={ this.props.currentStationId } />
+				<EditForm ref="editForm" data={this.state.currntContent} stationId={ this.props.currentStationId } />
 			</Modal>
 		)
 	}
 	setAddModal() {
-		let AddFrom = Form.create()(ContentForm)
+		let AddForm = Form.create()(ContentForm)
 		return (
 			<Modal
 				title="添加内容"
@@ -573,7 +897,7 @@ class Content extends Component {
 				visible={ this.state.addVisible }
 				onOk={ this.addOk }
 				onCancel={ this.addCancel }>
-				<AddFrom ref="addForm" stationId={ this.props.currentStationId } />
+				<AddForm ref="addForm" stationId={ this.props.currentStationId } />
 			</Modal>
 		)
 	}

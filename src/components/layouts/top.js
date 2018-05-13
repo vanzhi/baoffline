@@ -80,7 +80,7 @@ class Top extends Component {
                 <Breadcrumb>
                     {
                         this.props.path.map((key, index, path) => {
-                            let name = this.props.menusByKey[key].name
+                            let name = this.props.menusByKey[key] ? this.props.menusByKey[key].name : ''
                             return <Breadcrumb.Item key={ key }>{ name }</Breadcrumb.Item>
                         })
                     }

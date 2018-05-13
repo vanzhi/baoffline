@@ -27,16 +27,33 @@
 }
 .cm-no-data {
     background: $Grey-2;
-    height: 500px;
+    padding: 28% 0;
     width: 100%;
     color: $Grey-6;
     text-align: center;
-    line-height: 500px;
     border: 1px dashed $Grey-4;
+    max-height: 500px;
+}
+.cm-no-data.min {
+    padding: 18% 0;
 }
 .cm-dropbox {
     height: 180px;
     line-height: 1.5;
+}
+.cm-edit-node {
+    display: flex;
+    align-items: center;
+}
+.cm-edit-node .title {
+    display: inline-block;
+    width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.cm-edit-node .operate .ant-btn {
+    margin-bottom: 0;
 }
 /* page-home */
 .home-content {

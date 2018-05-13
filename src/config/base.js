@@ -55,7 +55,15 @@ class MenuInfo {
             key         : 'system',
             name        : '系统管理',
             icon        : <Icon type="tag" />,
-            children    : []
+            children    : [{
+                key         : 'site',
+                name        : '站点管理',
+                icon        : <Icon type="database" />,
+                children    : [{
+                    key         : 'foundation',
+                    name        : '站点管理'
+                }]
+            }]
         }, {
             key         : 'setting',
             name        : '平台设置',
@@ -70,14 +78,35 @@ class MenuInfo {
     }
 }
 
+// 内容权限
+const readType = {
+    0: '公开',
+    1: '内网'
+}
 
-const ContentType = {
-    1: '内容',
-    2: '链接',
-    3: '列表'
+const contentMode = {
+    'Content': '内容',
+    'Image': '图片',
+    'Vote': '投票',
+    'Recruit': '招聘'
+}
+
+const linkType = {
+    'LinkNoRelatedToChannelAndContent' : '默认（列表）',
+    'LinkToFirstContent' : '链接到第一条内容',
+    'LinkToFirstChannel' : '链接到第一个子栏目',
+    'LinkToLastAddChannel' : '链接到最近添加的子栏目'
+}
+
+const nodeType = {
+    'BackgroundTopicNode' : '专题',
+    'BackgroundNormalNode' : '普通'
 }
 
 export default {
     MenuInfo : new MenuInfo(),
-    ContentType
-};
+    contentMode,
+    linkType,
+    nodeType,
+    readType
+}

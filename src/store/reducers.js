@@ -1,4 +1,5 @@
 import NProgress from 'nprogress'
+import * as Business from '../utils/business' 
 import { 
 	SET_PATH, 
 	SET_STATIONS,
@@ -33,20 +34,6 @@ function setMenus(menus, menusByKey = {}, prePath = []) {
 		children && setMenus(children, menusByKey, path)
 	}
 	return menusByKey
-}
-
-// 一级一级获取栏目节点
-function setNodes(nodes, nodesByKey = {}) {
-	for (let i = 0; i < nodes.length; i++) {
-		let { childs, nodeId } = nodes[i]
-		nodesByKey[nodeId] = {
-			...nodes[i],
-			children: childs ? childs.map(child => child.nodeId) : undefined
-		}
-		delete nodesByKey[nodeId].childs
-		childs && setNodes(childs, nodesByKey)
-	}
-	return nodesByKey
 }
 
 // 页面载入
@@ -99,6 +86,13 @@ export const stations = (state, action) => {
 				stations[st.id] = st
 				return st.id
 			})
+			for (let key in stations) {
+				let parentDomainId = stations[key].parentDomainId
+				if (parentDomainId) {
+					stations[parentDomainId].children = stations[parentDomainId].children || []
+					stations[parentDomainId].children.push(key * 1)
+				}
+			}
 			return stations
 		default:
 			return state || {}
@@ -129,7 +123,7 @@ export const indexNodeId = (state, action) => {
 export const nodes = (state, action) => {
 	switch(action.type) {
 		case SET_NODES:
-			let nodes = setNodes(action.nodes)
+			let nodes = Business.setNodes(action.nodes)
 			return nodes
 		default:
 			return state || {}

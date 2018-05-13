@@ -9,6 +9,7 @@ import station_section_audit from './station/section/audit'
 import station_section_comment from './station/section/comment'
 import station_section_deleted from './station/section/deleted'
 import station_section_push from './station/section/push'
+import system_site_foundation from './system/site/foundation'
 
 export default {
 	home,
@@ -21,5 +22,6 @@ export default {
 	station_section_audit,
 	station_section_comment,
 	station_section_deleted,
-	station_section_push
+	station_section_push,
+	system_site_foundation
 }

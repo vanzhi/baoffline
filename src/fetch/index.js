@@ -106,6 +106,24 @@ export const getStationList = (param = {}) => {
     return fetchRequest(url, param, GET)
 }
 
+// 新增站点
+export const addStation = (param = {}) => {
+    let url = '/cms/domain/add'
+    return fetchRequest(url, param.data, POST)
+}
+
+// 编辑站点
+export const updateStation = (param = {}) => {
+    let url = '/cms/domain/update'
+    return fetchRequest(url, param.data, POST)
+}
+
+// 删除站点
+export const deleteStation = (param = {stationId: 0}) => {
+    let url = `/cms/domain/delete/${param.stationId}`
+    return fetchRequest(url, param.data, POST)
+}
+
 // 获取栏目列表
 export const getNodeList = (param = {stationId:0}) => {
     let url = `/cms/node/${param.stationId}/list`
@@ -114,15 +132,15 @@ export const getNodeList = (param = {stationId:0}) => {
 
 // 分页查询内容
 export const getContentList = (param = {stationId:0, nodeId:0}) => {
-    let { stationId, nodeId, pageNo, pageSize } = param
+    let { stationId, nodeId } = param
     let url = `/cms/content/${stationId}/${nodeId}/list`
-    return fetchRequest(url, {pageNo, pageSize}, POST)
+    return fetchRequest(url, param.data, POST)
 }
 
 // 删除栏目
 export const deleteNodes = (param = {}) => {
     let url = '/cms/node/delete'
-    return fetchRequest(url, param, POST)
+    return fetchRequest(url, param.data, POST)
 }
 
 // 获取栏目组信息
@@ -153,6 +171,24 @@ export const deleteNodeGroup =  (param = { stationId:0 }) => {
     param = { ...param }
     delete param.stationId
     return fetchRequest(url, param, POST)
+}
+
+// 添加栏目
+export const addNode =  (param = { stationId:0 }) => {
+    let url = `/cms/node/${param.stationId}/add`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 编辑栏目
+export const updateNode =  (param) => {
+    let url = `/cms/node/update`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 栏目排序
+export const sortNode =  (param) => {
+    let url = `/cms/node/sort`
+    return fetchRequest(url, param.data, POST)
 }
 
 // 获取内容组信息
@@ -200,9 +236,7 @@ export const deleteContent =  (param = {}) => {
 // 评论查询
 export const getCommentList =  (param = { contentId:0 }) => {
     let url = `/cms/comment/${param.contentId}/list`
-    param = { ...param }
-    delete param.contentId
-    return fetchRequest(url, param, POST)
+    return fetchRequest(url, param.data, POST)
 }
 
 // 上传图片

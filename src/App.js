@@ -15,6 +15,8 @@ import './styles/common.scss'
 import './styles/fn.scss'
 import './styles/custom.scss'
 
+  // 3.2.2 antd 老版本
+
 function mapStateToProps(state) {
     // 暂时在这里传入menus
     return {
