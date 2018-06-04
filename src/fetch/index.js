@@ -246,3 +246,33 @@ export const uploadImage = (param = {}) => {
     delete param.contentId
     return fetchRequest(url, param, POST)
 }
+
+// 获取用户列表
+export const getUserList =  (param = {}) => {
+    let url = `/cms/user/list`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 添加用户
+export const addUser =  (param = {}) => {
+    let url = `/cms/user/add`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 编辑用户
+export const updateUser =  (param = {}) => {
+    let url = `/cms/user/update`
+    return fetchRequest(url, param.data, POST)
+}
+
+// 角色列表
+export const getRoleList =  (param = {}) => {
+    let url = `/cms/role/list`
+    return fetchRequest(url, param.data, GET)
+}
+
+// 添加角色
+export const addRole = (param = {}) => {
+    let url = `/cms/role/add`
+    return fetchRequest(url, param.data, POST)
+}

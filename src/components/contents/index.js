@@ -10,6 +10,9 @@ import station_section_comment from './station/section/comment'
 import station_section_deleted from './station/section/deleted'
 import station_section_push from './station/section/push'
 import system_site_foundation from './system/site/foundation'
+import setting_user_account from './setting/user/account'
+import setting_auth_role from './setting/auth/role'
+import setting_auth_allot from './setting/auth/allot'
 
 export default {
 	home,
@@ -23,5 +26,8 @@ export default {
 	station_section_comment,
 	station_section_deleted,
 	station_section_push,
-	system_site_foundation
+	system_site_foundation,
+	setting_user_account,
+	setting_auth_role,
+	setting_auth_allot
 }

@@ -68,7 +68,26 @@ class MenuInfo {
             key         : 'setting',
             name        : '平台设置',
             icon        : <Icon type="appstore" />,
-            children    : []
+            children    : [{
+                key         : 'auth',
+                name        : '管理员管理',
+                icon        : <Icon type="database" />,
+                children    : [{
+                    key         : 'role',
+                    name        : '角色管理'
+                }, {
+                    key         : 'allot',
+                    name        : '管理员配置'
+                }]
+            }, {
+                key         : 'user',
+                name        : '用户管理',
+                icon        : <Icon type="database" />,
+                children    : [{
+                    key         : 'account',
+                    name        : '用户管理'
+                }]
+            }]
         }, {
             key         : 'statement',
             name        : '统计分析',
